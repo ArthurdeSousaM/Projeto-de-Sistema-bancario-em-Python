@@ -1,105 +1,87 @@
-# 🏦 Sistema de Simulação Bancária em Python 🐍
+# 🏦 Sistema Bancário Simples em Python
 
-### 📋 Descrição do Projeto
+Bem-vindo ao projeto de Sistema Bancário Simples! Este é um sistema desenvolvido em Python puro, focado em simular as operações bancárias mais comuns de um caixa eletrônico diretamente no seu terminal. O projeto foi estruturado de forma modular e com funções bem definidas, ideal para demonstrar e praticar conceitos fundamentais da linguagem Python, como manipulação de estruturas de dados, modularização de código e lógica de programação.
 
-Este script é uma aplicação de linha de comando (CLI) desenvolvida em Python que simula as operações transacionais de um sistema bancário. O programa foi estruturado de forma modular, com funções distintas para cada operação principal, e gerencia o estado da aplicação em memória durante sua execução. O objetivo é demonstrar conceitos de programação como manipulação de estado, fluxo de controle, modularidade com funções e o uso de bibliotecas padrão como `datetime` para registro de tempo e `textwrap` para formatação de texto.
+## ✨ Funcionalidades Principais
+
+O sistema permite uma experiência completa de gerenciamento de contas e transações, incluindo:
+
+* **Gestão de Clientes**: Cadastro de novos usuários no sistema.
+* **Criação de Contas**: Vinculação de contas correntes a usuários já existentes.
+* **Operações Financeiras**: Realizão de depósitos e saques.
+* **Controle de Transações**: Emissão de extratos detalhados.
+* **Segurança e Regras de Negócio**:
+    * Limite de saque por operação.
+    * Limite de transações diárias.
+    * Validação para evitar saques maiores que o saldo.
+
+## 🛠️ Detalhes Técnicos e Estrutura do Código
+
+O código é organizado em funções distintas, cada uma com uma responsabilidade única, o que torna o sistema coeso e de fácil manutenção.
+
+### Funções Principais
+
+#### `main()`
+É a função central que executa o loop principal do programa. Ela gerencia o estado da aplicação (listas de `usuarios` e `contas`), exibe o menu de opções e orquestra a chamada das outras funções com base na escolha do usuário. É aqui que as regras de negócio, como o limite diário de transações, são verificadas antes de cada operação.
 
 ---
 
-### ✨ Funcionalidades e Regras Implementadas
+### Funções de Operações Bancárias
 
-O script executa três operações principais, governadas por um conjunto de regras de negócio:
+#### `depositar(saldo, valor, extrato, /)`
+Responsável por adicionar fundos a uma conta.
+* **Argumentos Posicionais (Positional-Only)**: Recebe `saldo`, `valor` e `extrato` como argumentos que só podem ser passados pela posição.
+* **Validação**: Verifica se o `valor` do depósito é positivo.
+* **Registro**: Adiciona a transação ao `extrato` com data e hora.
+* **Retorno**: Devolve o novo `saldo`, o `extrato` atualizado e um booleano indicando o sucesso da operação.
 
-* **Depósito:** Adiciona um valor ao saldo. A operação só é concluída se o valor informado for positivo.
-* **Saque:** Subtrai um valor do saldo. A operação está sujeita às seguintes validações sequenciais:
-    1.  O valor do saque não pode ser superior ao saldo atual.
-    2.  O valor do saque não pode exceder o limite fixo de R$ 500,00, definido pela constante `LIMITE_POR_SAQUE`.
-    3.  O valor do saque deve ser positivo.
-* **Extrato:** Exibe o histórico de todas as transações bem-sucedidas (depósitos e saques) e o saldo final.
-* **Controle de Transações:** Existe um limite de 10 transações diárias (`LIMITE_TRANSACOES_DIARIAS`). Este contador é reiniciado automaticamente quando a data do sistema muda.
+#### `sacar(*, saldo, valor, extrato, limite_por_saque)`
+Processa a retirada de fundos de uma conta.
+* **Argumentos Nominais (Keyword-Only)**: Recebe `saldo`, `valor`, `extrato` e `limite_por_saque` como argumentos que só podem ser passados pelo nome.
+* **Validações**:
+    1.  Verifica se o `valor` do saque ultrapassa o saldo disponível.
+    2.  Verifica se o `valor` excede o `limite_por_saque` (R$ 500,00).
+    3.  Verifica se o `valor` é positivo.
+* **Registro**: Adiciona a transação de saque ao `extrato`.
+* **Retorno**: Devolve o `saldo` atualizado, o `extrato` e um booleano de sucesso.
+
+#### `exibir_extrato(saldo, /, *, extrato)`
+Mostra o histórico de transações e o saldo final da conta.
+* **Argumentos Híbridos**: Recebe `saldo` como argumento posicional e `extrato` como nominal.
+* **Funcionalidade**: Itera sobre a lista de `extrato` e exibe cada transação registrada. Caso não haja transações, uma mensagem informativa é exibida. Ao final, apresenta o saldo atual.
 
 ---
 
-### 🚀 Execução
+### Funções de Gerenciamento de Contas e Usuários
 
-Para executar o programa, utilize um interpretador Python em um terminal:
+#### `cadastrar_usuario(usuarios)`
+Adiciona um novo usuário ao sistema.
+* **Validação de CPF**: Utiliza a função `filtrar_usuario_por_cpf` para garantir que o CPF informado ainda não esteja cadastrado.
+* **Coleta de Dados**: Solicita nome, data de nascimento e endereço.
+* **Armazenamento**: Guarda os dados do usuário em um dicionário e o adiciona à lista `usuarios`.
+
+#### `cadastrar_conta_bancaria(contas, usuarios)`
+Cria uma nova conta corrente e a associa a um usuário.
+* **Requisito**: O usuário (identificado pelo CPF) já deve estar cadastrado.
+* **Geração de Conta**: O número da conta é gerado sequencialmente.
+* **Estrutura da Conta**: A conta é um dicionário que armazena a agência (fixa "0001"), o número da conta, os dados do usuário titular e informações para controle de transações.
+
+#### `listar_contas(contas)`
+Exibe de forma organizada todas as contas correntes cadastradas no sistema, mostrando agência, número da conta e o nome do titular.
+
+#### `filtrar_usuario_por_cpf(cpf, usuarios)`
+Uma função utilitária que busca e retorna um usuário na lista de `usuarios` com base no CPF fornecido. Retorna `None` se nenhum usuário for encontrado.
+
+## 🚀 Como Executar
+
+Para rodar este projeto, você precisa apenas ter o Python 3 instalado.
+
+1.  Clone o repositório ou baixe o arquivo `teste.py`.
+2.  Abra seu terminal ou prompt de comando.
+3.  Navegue até o diretório onde o arquivo está localizado.
+4.  Execute o seguinte comando:
 
 ```bash
 python teste.py
 ```
-
-### 🛠️ Análise da Arquitetura do Código
-A lógica do programa é segmentada em funções, cada uma com uma responsabilidade bem definida.
-
-### ▶️ main()
-
-1. Função: Atua como o ponto de entrada e o controlador principal do fluxo da aplicação.
-
-2. Gerenciamento de Estado: Inicializa e mantém as variáveis que representam o estado da aplicação: saldo, extrato (uma lista de strings), numero_transacoes e data_atual.
-
-3. Loop de Execução: Contém o loop principal (while True) que mantém o programa em execução, aguardando a entrada do usuário.
-
-4. Lógica de Controle:
-
-   - Verifica a data do sistema no início de cada iteração para resetar o contador numero_transacoes.
-
-   - Invoca a função exibir_menu() para obter a entrada do usuário.
-
-   - Utiliza uma estrutura condicional (if/elif/else) para rotear o comando do usuário para a função apropriada.
-
-   - Atualiza as variáveis de estado com os valores retornados pelas funções de transação.
-
-### 🧾 exibir_menu()
-
-1. Função: Responsável exclusivamente pela interface com o usuário.
-
-2. Implementação: Imprime um bloco de texto formatado (utilizando textwrap.dedent) no console e captura a entrada do usuário via input(), retornando o valor como uma string.
-
-### ➕ depositar(saldo, valor, extrato, /)
-
-1. Função: Processa a lógica de depósito.
-
-2. Assinatura: Utiliza argumentos posicionais (/), exigindo que os parâmetros sejam passados na ordem correta, sem nomeação.
-
-3. Implementação:
-
-   - Valida se o valor é positivo.
-
-   - Se a validação for bem-sucedida, o saldo é incrementado.
-
-   - Uma string formatada, contendo um timestamp gerado por datetime.now(), é adicionada à lista extrato.
-
-   - Retorna uma tupla contendo o novo saldo, o extrato atualizado e um booleano (True) indicando o sucesso da operação.
-
-### ➖ sacar(*, saldo, valor, extrato, limite_por_saque)
-
-1. Função: Processa a lógica de saque.
-
-2. Assinatura: Utiliza argumentos nomeados (*), exigindo que os parâmetros sejam passados utilizando seus respectivos nomes (ex: saldo=...).
-
-3. Implementação:
-
-   - Executa uma cadeia de validações na ordem de precedência definida.
-
-   - Se qualquer validação falhar, a função imprime uma mensagem de erro e termina sua execução.
-
-   - Se todas as validações passarem, o saldo é decrementado e o registro da transação (com timestamp) é adicionado ao 
-     extrato.
-
-   - Retorna uma tupla com o saldo atualizado, o extrato e um booleano de sucesso.
-
-### 📄 exibir_extrato(saldo, /, *, extrato)
-
-1. Função: Responsável pela formatação e exibição do histórico de transações e do saldo.
-
-2. Assinatura: Combina argumentos posicionais (saldo) e nomeados (extrato).
-
-3. Implementação:
-
-   - Imprime um cabeçalho para o extrato.
-
-   - Itera sobre a lista extrato, imprimindo cada string de transação.
-
-   - Caso a lista esteja vazia, exibe uma mensagem indicando a ausência de movimentações.
-
-   - Ao final, imprime o valor da variável saldo recebida.
+5. Siga as instruções apresentadas no menu interativo.
