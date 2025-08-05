@@ -1,53 +1,105 @@
-# Sistema Bancário Simples em Python
+# 🏦 Sistema de Simulação Bancária em Python 🐍
 
-Este é um projeto de um sistema bancário básico desenvolvido em Python. O objetivo é simular as operações fundamentais de uma conta bancária, como depósito, saque e visualização de extrato, através de uma interface de linha de comando (CLI).
+### 📋 Descrição do Projeto
 
-## 📜 Descrição
-
-O sistema permite que o usuário interaja com uma conta bancária fictícia. Ele pode adicionar fundos, retirar dinheiro (respeitando certas regras de negócio) e consultar o histórico de transações. O projeto foi estruturado utilizando funções para cada operação, tornando o código modular e de fácil compreensão.
+Este script é uma aplicação de linha de comando (CLI) desenvolvida em Python que simula as operações transacionais de um sistema bancário. O programa foi estruturado de forma modular, com funções distintas para cada operação principal, e gerencia o estado da aplicação em memória durante sua execução. O objetivo é demonstrar conceitos de programação como manipulação de estado, fluxo de controle, modularidade com funções e o uso de bibliotecas padrão como `datetime` para registro de tempo e `textwrap` para formatação de texto.
 
 ---
 
-## ✨ Funcionalidades
+### ✨ Funcionalidades e Regras Implementadas
 
-O sistema oferece um menu com as seguintes opções:
+O script executa três operações principais, governadas por um conjunto de regras de negócio:
 
-- **[1] Depositar:** Permite ao usuário adicionar qualquer valor positivo ao saldo da conta.
-- **[2] Sacar:** Permite ao usuário retirar dinheiro da conta, sujeito a três condições:
-    1. O valor do saque não pode exceder o saldo disponível.
-    2. O valor por saque é limitado a R$ 500,00.
-    3. O usuário pode realizar no máximo 3 saques por dia.
-- **[3] Extrato:** Exibe o histórico de todas as transações (depósitos e saques) realizadas e o saldo atual da conta.
-- **[0] Sair:** Encerra a execução do programa.
+* **Depósito:** Adiciona um valor ao saldo. A operação só é concluída se o valor informado for positivo.
+* **Saque:** Subtrai um valor do saldo. A operação está sujeita às seguintes validações sequenciais:
+    1.  O valor do saque não pode ser superior ao saldo atual.
+    2.  O valor do saque não pode exceder o limite fixo de R$ 500,00, definido pela constante `LIMITE_POR_SAQUE`.
+    3.  O valor do saque deve ser positivo.
+* **Extrato:** Exibe o histórico de todas as transações bem-sucedidas (depósitos e saques) e o saldo final.
+* **Controle de Transações:** Existe um limite de 10 transações diárias (`LIMITE_TRANSACOES_DIARIAS`). Este contador é reiniciado automaticamente quando a data do sistema muda.
 
 ---
 
-## 🚀 Como Executar o Projeto
+### 🚀 Execução
 
-Para rodar este projeto, você precisa ter o Python instalado em seu computador.
+Para executar o programa, utilize um interpretador Python em um terminal:
 
-1. Clone o repositório ou baixe os arquivos.
-2. Abra um terminal na pasta onde o arquivo `sistema_banco_projeto.py` está localizado.
-3. Execute o seguinte comando:
+```bash
+python teste.py
+```
 
-   ```bash
-   python sistema_banco_projeto.py
+### 🛠️ Análise da Arquitetura do Código
+A lógica do programa é segmentada em funções, cada uma com uma responsabilidade bem definida.
 
+### ▶️ main()
 
-   
-4. Siga as instruções apresentadas no menu do terminal para interagir com o sistema.
+1. Função: Atua como o ponto de entrada e o controlador principal do fluxo da aplicação.
 
-🛠️ Estrutura do Código
-O código é organizado nas seguintes funções para garantir clareza e manutenibilidade:
+2. Gerenciamento de Estado: Inicializa e mantém as variáveis que representam o estado da aplicação: saldo, extrato (uma lista de strings), numero_transacoes e data_atual.
 
-1. exibir_menu(): Imprime o menu de opções para o usuário e captura a escolha dele.
+3. Loop de Execução: Contém o loop principal (while True) que mantém o programa em execução, aguardando a entrada do usuário.
 
-2. depositar(saldo, valor, extrato, /): Função para adicionar fundos à conta. Recebe o saldo atual, o valor a ser depositado e a lista de extrato como argumentos posicionais. Retorna o novo saldo e o extrato atualizado.
+4. Lógica de Controle:
 
-3. sacar(*, saldo, valor, extrato, limite, numero_saques, limite_saques): Função para retirar dinheiro da conta. Recebe todos os seus argumentos por nome (keyword-only). Aplica as regras de negócio (limite de valor, saldo e número de saques) antes de permitir a transação. Retorna o novo saldo, o extrato atualizado e o número de saques realizados.
+   - Verifica a data do sistema no início de cada iteração para resetar o contador numero_transacoes.
 
-4. exibir_extrato(saldo, /, *, extrato): Mostra todas as transações registradas. Recebe o saldo como argumento posicional e o extrato como argumento nomeado (keyword-only).
+   - Invoca a função exibir_menu() para obter a entrada do usuário.
 
-5. main(): Função principal que inicializa as variáveis da conta (saldo, extrato, etc.) e contém o loop principal do programa, orquestrando as chamadas para as outras funções com base na entrada do usuário.
+   - Utiliza uma estrutura condicional (if/elif/else) para rotear o comando do usuário para a função apropriada.
 
-A estrutura if __name__ == "__main__": garante que a função main() seja executada apenas quando o script é rodado diretamente.
+   - Atualiza as variáveis de estado com os valores retornados pelas funções de transação.
+
+### 🧾 exibir_menu()
+
+1. Função: Responsável exclusivamente pela interface com o usuário.
+
+2. Implementação: Imprime um bloco de texto formatado (utilizando textwrap.dedent) no console e captura a entrada do usuário via input(), retornando o valor como uma string.
+
+### ➕ depositar(saldo, valor, extrato, /)
+
+1. Função: Processa a lógica de depósito.
+
+2. Assinatura: Utiliza argumentos posicionais (/), exigindo que os parâmetros sejam passados na ordem correta, sem nomeação.
+
+3. Implementação:
+
+   - Valida se o valor é positivo.
+
+   - Se a validação for bem-sucedida, o saldo é incrementado.
+
+   - Uma string formatada, contendo um timestamp gerado por datetime.now(), é adicionada à lista extrato.
+
+   - Retorna uma tupla contendo o novo saldo, o extrato atualizado e um booleano (True) indicando o sucesso da operação.
+
+### ➖ sacar(*, saldo, valor, extrato, limite_por_saque)
+
+1. Função: Processa a lógica de saque.
+
+2. Assinatura: Utiliza argumentos nomeados (*), exigindo que os parâmetros sejam passados utilizando seus respectivos nomes (ex: saldo=...).
+
+3. Implementação:
+
+   - Executa uma cadeia de validações na ordem de precedência definida.
+
+   - Se qualquer validação falhar, a função imprime uma mensagem de erro e termina sua execução.
+
+   - Se todas as validações passarem, o saldo é decrementado e o registro da transação (com timestamp) é adicionado ao 
+     extrato.
+
+   - Retorna uma tupla com o saldo atualizado, o extrato e um booleano de sucesso.
+
+### 📄 exibir_extrato(saldo, /, *, extrato)
+
+1. Função: Responsável pela formatação e exibição do histórico de transações e do saldo.
+
+2. Assinatura: Combina argumentos posicionais (saldo) e nomeados (extrato).
+
+3. Implementação:
+
+   - Imprime um cabeçalho para o extrato.
+
+   - Itera sobre a lista extrato, imprimindo cada string de transação.
+
+   - Caso a lista esteja vazia, exibe uma mensagem indicando a ausência de movimentações.
+
+   - Ao final, imprime o valor da variável saldo recebida.
